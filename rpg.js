@@ -1,107 +1,77 @@
-//Dados 
-const dadoComum = () => {
+//Standard Dice
+const dice = () => {
     return Math.round((Math.random() * 5) + 1)
 }
 
-/* 
-// Construtor de Personagem
-function personagem(frc, hab, res, arm, pdf) {
-    this.frc = frc;
-    this.hab = hab;
-    this.res = res;
-    this.arm = arm;
-    this.pdf = pdf;
+//Advantage Constructor
+function Advantage(name, stat, cost, bonus = 0) {
+    this.name = name;
+    this.stat = stat;
+    this.cost = cost;
+    this.bonus = bonus;
 }
 
-// Construindo o personagem
-var eu = new personagem()
-eu.frc = 1
-eu.hab = 1
-eu.res = 1
-eu.arm = 1
-eu.pdf = 1
-eu.PV = eu.res * 5
-eu.PM = eu.res * 5
-eu.dinheiro = (dadoComum() * 100) + "z"
+//Building Advantages
+const agilityBoost = new Advantage('Agility Boost', 'strenght', 1, 2);
+const powerfulDexterityBoost = new Advantage('Powerful Dexterity Boost', 'strenght', 2, 3);
 
-//Checagem de pontos
-var total = () => {
-    return eu.frc + eu.hab + eu.res + eu.arm + eu.pdf
+//Character Constructor
+function Character(name) {
+    this.name = name;
+    this.stats = {
+        strenght: 1,
+        endurance: 1,
+        dexterity: 1,
+        armor: 1,
+        powerOfFire: 1,
+        life: 5,
+        magic: 5,
+    };
+    this.advantages = [];
+    this.pointsToSpend = 12;
 }
 
-const totalDePontos = () => {
-    if (total() > 12) {
-        console.log("Excedeu a quantidade de pontos")
-    } else {
-        console.log("Conseguiu")
+//Add a Status
+Character.prototype.addStats = function (name, value) {
+    if (this.pointsToSpend - value >= 0) {
+        this.stats[name] += value;
+        this.pointsToSpend -= value;
     }
 }
 
-totalDePontos()
-
-
-//Perícias
-const pericias = ["Animais", "Arte", "Ciência", "Crime", "Esporte", "Idiomas", "Investigação", "Manipulação", "Máquinas", "Medicina", "Sobrevivência"]
-
-//Tipos de Dano
-//Vantagens
-
-//Construtor de Vantagem
-function vantagem(nome, custo) {
-    this.nome = nome;
-    this.custo = custo;
+Character.prototype.addLifeMagic = function (name, endurance) {
+    this.stats[name] *= this.stats[endurance];
 }
 
-var aceleracao = new vantagem("Aceleração", 1)
-var adaptador = new vantagem("Aceleração", 1)
-//Desvantagens */
 
-
-// Character Constructor
-function personagem(frc, hab, res, arm, pdf) {
-    this.frc = frc;
-    this.hab = hab;
-    this.res = res;
-    this.arm = arm;
-    this.pdf = pdf;
-}
-
-// Building a Character
-var eu = new personagem()
-eu.frc = 1
-eu.hab = 1
-eu.res = 1
-eu.arm = 1
-eu.pdf = 1
-eu.PV = eu.res * 5
-eu.PM = eu.res * 5
-eu.dinheiro = (dadoComum() * 100) + "z"
-
-
-console.log(eu)
-
-// Function with total points
-var total = () => {
-    return eu.frc + eu.hab + eu.res + eu.arm + eu.pdf
-}
-
-const totalofPoints = () => {
-    if (total() > 10) {
-        console.log("You have exceeded the number of points")
-    } else {
-        console.log("You Did it!")
+//Add a Advantage
+Character.prototype.addAdvantage = function (advantage) {
+    if (advantage instanceof Advantage) {
+        let { stat, cost, bonus } = advantage;
+        if (this.pointsToSpend - cost > 0) {
+            this.stats[stat] += bonus;
+            this.pointsToSpend -= cost;
+            this.advantages.push(advantage);
+        }
     }
 }
 
-totalofPoints()
+//Creating a character
+const rodrigo = new Character('Rodrigo');
 
-// Advantages Consctructor
-function vantagem(nome, custo, bonus) {
-    this.nome = nome;
-    this.custo = custo;
-    this.bonus = bonus
-}
+//Adding stats
+rodrigo.addStats('strenght');
+rodrigo.addStats('dexterity');
+rodrigo.addStats('endurance');
+rodrigo.addStats('armor');
+rodrigo.addStats('powerOfFire');
 
-// Example of Advtanges
-var aceleracao = new vantagem("Aceleração", 1, eu.hab + 1)
-var adaptador = new vantagem("Aceleração", 1)
+//Adding PV and Magic
+rodrigo.addLifeMagic('life', 'endurance');
+rodrigo.addLifeMagic('magic', 'endurance');
+
+//AAdding Advantages
+ rodrigo.addAdvantage(agilityBoost);
+ rodrigo.addAdvantage(powerfulDexterityBoost);
+
+ console.log(rodrigo)
